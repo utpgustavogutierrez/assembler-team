@@ -276,32 +276,31 @@ Con la culminación de este ejercicio ya lleva un 40 porciento completado. Sin
 embargo, lo más importante es que ya tiene un gran conocimiento sobre su
 programa.
 
-__Por aqui__
-
-----
-
 ## Ejercicio 4
 
 Hasta este momento falta poco para terminar con la codificación completa de las
-instrucciones de tipo _R_ y tipo _I_. Para completar las tipo $R$ es cuestión de
-codificar los campos _funct3_ y _funct7_ tal y como lo estipula la tabla para
-cada operación. Es decir, para cada instrucción [tipo _R_](#tipo-r), usted de
-los 32 bits ya codificó el _opcode_ el cual es el mismo para todas (ejercicio
-1). El registro _rd_ del cuaál codificó el número. Por ejemplo `add x2, x5, x7`,
-codificó el 2 en los siguientes 5 bits (después del _opcode_). Luego sigue el
-_funct3_ que depende de la operación específica. Tenga cuidado que en la tabla
-aparece un hexadecimal (`0x4` en el caso de la operación `xor`) que debe ir
-codificado en 3 bits. Luego siguen los campos _rs1_ y _rs2_ los cuales se
-traducen en la misma forma que lo hizo con _rd_ (5 bits para cada uno). Por
-último queda _funct7_ que es cero para todas las instrucciones a excepción de
-`sub` y `sra` donde se codifica el hexadecimal `0x20` en 7 bits.
+instrucciones de tipo _R_ y tipo _I_. Para completar las tipo _R_ es cuestión de
+codificar los campos _funct3_ y _funct7_ tal y como lo estipula la
+[tabla](#tipo-r) para cada operación. Es decir, para cada instrucción [tipo
+_R_](#tipo-r).
+
+Si tenemos en cuenta la siguiente figura y la instrucción `add x2, x5, x7`:
+
+![](./rtype.svg)
+
+usted ya debe tener la siguiente codificación:
+
+![](./instcodeexample1.svg) 
+
+Ahora queda la codificación del campo _funct3_ y _funct7_ que dependen de la
+operación específica que debe terminar en este momento.
 
 Para completar la codificación de las instrucciones [tipo _I_](#tipo-i)
 (aritméticas y de corrimientos) no es mucho lo que falta.
 
-El _opcode_ ya debe estar codificado desde el ejercicio 1. El _funct3_ debe
-codificarlo en 3 bits de la misma forma que codificó el de las tipo _R_ (tenga
-en cuenta que es diferente por cada operación). La constante de estas
+Los campos _opcode_, _rd_, _rs1_ y _rs2_, ya deben estar codificados. El
+_funct3_ debe codificarlo de la misma forma que codificó el de las tipo _R_
+(tenga en cuenta que es diferente por cada operación). La constante de estas
 operaciones está en la parte donde estaban el _rs2_ y el _funct7_ para las tipo
 _R_:
 
@@ -312,9 +311,12 @@ todas las operaciones tipo _I_ deben llevar la constante codificada en esta
 parte.
 
 Para completar este ejercicio, lo único que falta es verificar que para las
-instrucciones: __slli__, __srli__, __srai__, la constante pueda ser codificada en 5 bits únicamente como lo muestra la siguiente figura. Los demás valores deben ser 0 excepto para la operación __srai__ que por tener el mismo _funct3_ de __srli__ se diferencia de ella en el bit 30 que para __srai__ debe ser 1. En caso de no ser así
-su ensamblador emitirá un error e indicará la línea en el archivo fuente donde
-este ocurre.
+instrucciones: __slli__, __srli__, __srai__, la constante pueda ser codificada
+en 5 bits únicamente como lo muestra la siguiente figura. Los demás valores
+deben ser 0 excepto para la operación __srai__ que por tener el mismo _funct3_
+de __srli__ se diferencia de ella en el bit 30 que para __srai__ debe ser 1. En
+caso de no ser así su ensamblador emitirá un error e indicará la línea en el
+archivo fuente donde este ocurre.
 
 ![](./ishifttype.svg)
 ![](./iimm.svg)
@@ -341,17 +343,17 @@ interesan para esta parte.
 Note que el tipo de instrucciones de estos dos grupos son escritas de manera
 diferente. La instrucción tiene tres partes: el nombre, un registro y luego una
 expresión compuesta por una constante y el nombre de un registro entre
-paréntesis. Usted debe tener esta estructura en cuenta a la hora de procesarla.
-De todos modos la traducción funciona de manera muy similar a la de las
-instrucciones anteriores. En particular, las del primer grupo (_lw_ por ejemplo)
-son del tipo _I_. Esto es importante porque ya se definió como la constante debe
-ser codificada: 12 bits y en complemento a dos.
+paréntesis. Usted debe tener esta estructura en cuenta a la hora de procesarla
+con la expresión regular. De todos modos la traducción funciona de manera muy
+similar a la de las instrucciones anteriores. En particular, las del primer
+grupo (_lw_ por ejemplo) son del tipo _I_. Esto es importante porque ya se
+definió como la constante debe ser codificada: 12 bits y en complemento a dos.
 
 La parte de la constante en las instrucciones del segundo grupo deben ser
-codificadas así: 
+codificadas así:
 
 ![](./stype.svg)
-![](./simm.svg)
+<!-- ![](./simm.svg) -->
 
 Note que en este caso la constante debe quedar codificada en dos partes
 separadas de la instrucción.
@@ -360,9 +362,8 @@ En la parte menos significativa está el _opcode_. Luego van los 5 bits menos
 significativos de la constante (cuya representación es en 12 bits), al final, en
 la parte más significativa van los restantes 7 bits de la constante.
 
-Su meta con este ejercicio es completar la implementación de los siguientes dos
-grupos de instrucciones. Ya con esto debe estar completo alrededor del 65% de su
-trabajo.
+Su meta con este ejercicio es completar la implementación de este grupo de
+instrucciones. Ya con esto debe estar completo alrededor del 65% de su trabajo.
 
 ## Ejercicio 6
 
@@ -393,18 +394,6 @@ label2:                     ; tercera etiqueta
 
 Ese programa quedará en la memoria de la siguiente forma:
 
-<!-- 
-| Dirección         | Instrucción                |
-| ----------------- | -------------------------- |
-| 0                 | addi x4, zero, 520         |
-| 4                 | addi x5, zero, 1550        |
-| 8                 | beq x4, x5, __label1__     |
-| 12                | addi x6, zero, 80          |
-| 16                | beq zero, zero, __label2__ |
-| 20   (__label1__) | addi x6, zero, 100         |
-| 24   (__label2__) | add zero, zero, zero       | -->
-
-
 ![](./exprogram.drawio.svg)
 
 Para calcular como se debe codificar una etiqueta hay que tener en cuenta dos
@@ -412,7 +401,8 @@ partes: la parte en la que la etiqueta es definida y la parte en la que la
 etiqueta es utilizada. En nuestro caso, la etiqueta _label1_ es definida para
 almacenar la dirección de la sexta instrucción. Esto quiere decir que la
 etiqueta va a "representar" el lugar en la memoria donde quedará la codificación
-de la sexta instrucción que es 20 en este caso.
+de la sexta instrucción que es 20 en este caso. En este momento es donde usted
+debe revisar la codificación de las etiquetas. 
 
 De otro lado, la etiqueta _label1_ es utilizada en la tercera instrucción que
 está codificada en la dirección 8. Con estos dos valores es ahora posible
@@ -426,22 +416,14 @@ instrucción que está siendo codificada.
 
 ![](./exprogram-resolved.drawio.svg)
 
-<!-- | Dirección         | Instrucción                |
-| ----------------- | -------------------------- |
-| 0                 | addi x4, zero, 520         |
-| 4                 | addi x5, zero, 1550        |
-| 8                 | beq x4, x5, __12__     |
-| 12                | addi x6, zero, 80          |
-| 16                | beq zero, zero, __8__ |
-| 20   (__label1__) | addi x6, zero, 100         |
-| 24   (__label2__) | add zero, zero, zero       | -->
-
 Note la sustitución que se realizó en las instrucciones en las que cada etiqueta
 estaba representada.
 
 El objetivo de este ejercicio es entonces que implemente la parte que calcula
-cada una de las etiquetas de su programa. En el siguiente veremos como esa
-información es codificada.
+cada una de las etiquetas de su programa. Esto también comprende controlar el
+tipo de errores que pueden aparecer aquí. Por ejemplo, saltar a etiquetas que no
+están definidas en el programa debe causar un error. En el siguiente veremos
+como esa información es codificada.
 
 ## Ejercicio 7
 
@@ -456,7 +438,7 @@ misma.
 La siguiente imagen muestra la distribución de la información de una instrucción tipo _B_:
 
 ![](./btype.svg)
-![](./bimm.svg)
+<!-- ![](./bimm.svg) -->
 
 Como es posible evidenciar es muy parecida a la distribución de la información
 de las instrucciones tipo _S_ que usted ya realizó en el ejercicio 5. Es decir
@@ -464,6 +446,8 @@ el inmediato o constante está separado en dos partes. La primera está
 comprendida por los bits del 7 al 11 (parte menos significativa) y la segunda en
 los bits del 25 al 31. Sigue siendo una constante de 12 bits pero está
 distribuida de manera diferente en la codificación.
+
+---
 
 | Cod | b31 | b30 | b29 | b28 | b27 | b26 | b25 | b11 | b10 | b9  | b8  | b7  |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

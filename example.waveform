@@ -1,0 +1,10 @@
+{reg: [
+  {bits: 7,  name: '0 1 1 0 0 1 1', "attr": "opcode", type: 8},
+  {bits: 5,  name: '0 0 0 1 0', "attr":"rd", type: 2},
+  {bits: 3,  name: 'funct3', type: 8},
+  {bits: 5,  name: '00101', "attr":"rs1", type: 4},
+  {bits: 5,  name: '00111', "attr":"rs2", type: 4},
+  {bits: 7,  name: 'funct7', type: 7},
+], config:{label:{right: 'add x2,x5,x7'}}}
+
+// 0000000 00111 00101 000 00010 0110011

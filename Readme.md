@@ -1,18 +1,18 @@
-# Estructuras de datos (primer examen)
+# Ensamblador RISC-V
 
-- [Estructuras de datos (primer examen)](#estructuras-de-datos-primer-examen)
+- [Ensamblador RISC-V](#ensamblador-risc-v)
   - [Introducción](#introducción)
   - [Ensamblador para RISCV](#ensamblador-para-riscv)
   - [Ejercicio 1](#ejercicio-1)
   - [Ejercicio 2](#ejercicio-2)
   - [Ejercicio 3](#ejercicio-3)
   - [Ejercicio 4](#ejercicio-4)
-- [Ejercicio 5](#ejercicio-5)
-- [Ejercicio 6](#ejercicio-6)
-- [Ejercicio 7](#ejercicio-7)
-- [Ejercicio 8](#ejercicio-8)
-- [Ejercicio 9](#ejercicio-9)
-- [Ejercicio 10](#ejercicio-10)
+  - [Ejercicio 5](#ejercicio-5)
+  - [Ejercicio 6](#ejercicio-6)
+  - [Ejercicio 7](#ejercicio-7)
+  - [Ejercicio 8](#ejercicio-8)
+  - [Ejercicio 9](#ejercicio-9)
+  - [Ejercicio 10](#ejercicio-10)
 - [Recursos](#recursos)
 - [Resumen de instrucciones](#resumen-de-instrucciones)
   - [Tipo R](#tipo-r)
@@ -269,7 +269,7 @@ este ocurre.
 ![](./ishifttype.svg)
 ![](./iimm.svg)
 
-# Ejercicio 5
+## Ejercicio 5
 
 Este ejercicio va dirigido a la codificación de dos grupos nuevos de
 instrucciones las [tipo I](#tipo-i) para carga de información desde la memoria y
@@ -314,7 +314,7 @@ Su meta con este ejercicio es completar la implementación de los siguientes dos
 grupos de instrucciones. Ya con esto debe estar completo alrededor del 65% de su
 trabajo.
 
-# Ejercicio 6
+## Ejercicio 6
 
 Este es el siguiente grupo de instrucciones que se deberá codificar las
 instrucciones [tipo B](#tipo-b).
@@ -393,7 +393,7 @@ El objetivo de este ejercicio es entonces que implemente la parte que calcula
 cada una de las etiquetas de su programa. En el siguiente veremos como esa
 información es codificada.
 
-# Ejercicio 7
+## Ejercicio 7
 
 Después de terminado el ejercicio anterior y ya habiendo calculado la constante
 del salto de cada instrucción procederemos a codificarla. Es de resaltar que la
@@ -430,7 +430,7 @@ grupo siembre tendrá 0 como el bit menos significativos.
 Su trabajo en este ejercicio consiste entonces en terminar la codificación de
 las instrucciones tipo _B_ que comenzó en el ejercicio anterior.
 
-# Ejercicio 8
+## Ejercicio 8
 
 Hasta este punto ya deben estar codificadas la mayoría de las instrucciones,
 solo quedan faltando 6 de las cuales 2 son realmente básicas así que sería más
@@ -468,7 +468,7 @@ Su trabajo en este ejercicio es codificar la instrucción `jal`y probar que la
 codificación de `jalr`esté funcionando bien. Esta última es de tipo _I_ así que
 usted ya debe estar en capacidad de entenderla.
 
-# Ejercicio 9
+## Ejercicio 9
 
 Las dos instrucciones que usted codificará en este ejercicio son las del [tipo
 U](#tipo-u). Son realmente sencillas, más que las del punto anterior. Tienen el
@@ -488,7 +488,7 @@ siguiente manera:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Imm | b7  | b6  | b5  | b4  | b3  | b2  | b1  | b0  |
 
-# Ejercicio 10
+## Ejercicio 10
 
 En este ejercicio usted finalmente probará todo. Si necesita programas de
 ejemplos los puede construir usted mismo en [esta](https://godbolt.org/) página

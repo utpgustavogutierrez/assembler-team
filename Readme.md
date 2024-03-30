@@ -2,6 +2,7 @@
 
 - [Ensamblador RISC-V](#ensamblador-risc-v)
   - [Introducción](#introducción)
+  - [Expresiones regulares en Python](#expresiones-regulares-en-python)
   - [Ensamblador para RISCV](#ensamblador-para-riscv)
   - [Ejercicio 1](#ejercicio-1)
   - [Ejercicio 2](#ejercicio-2)
@@ -14,7 +15,9 @@
   - [Ejercicio 9](#ejercicio-9)
   - [Ejercicio 10](#ejercicio-10)
 - [Recursos](#recursos)
-- [Resumen de instrucciones](#resumen-de-instrucciones)
+  - [rvalp.pdf](#rvalppdf)
+- [Resumen de registros e instrucciones](#resumen-de-registros-e-instrucciones)
+  - [Registros](#registros)
   - [Tipo R](#tipo-r)
   - [Tipo I](#tipo-i)
   - [Aritméticas y lógicas](#aritméticas-y-lógicas)
@@ -29,10 +32,6 @@
 
 ## Introducción
 
-Para este examen usted requerirá de alguna documentación y de algo de código
-fuente que estará disponible como parte del repositorio donde se encuentra este
-archivo.
-
 Este trabajo está diseñado para ser realizado en parejas. Es decir, grupos de
 máximo dos estudiantes. Al respecto es necesario aclarar que en cualquier caso
 se puede requerir una sustentación. En esas circunstancias la nota del trabajo
@@ -40,11 +39,77 @@ será la nota de la sustentación. Por tratarse de un trabajo en grupos ambos
 integrantes deben estar en total capacidad de llevar a cabo la sustentación e
 igual la nota será grupal.
 
+La idea de este trabajo es poner en práctica los conceptos sobre expresiones
+regulares adquiridos en el curso. Para dar un objetivo extra y adquirir
+conocimiento en otras áreas de la carrera implementará un ensamblador para el
+conjunto de instrucciones de RISC-V, en específico parar RISCVI32.
+
+Un ensamblador es un traductor muy simple que toma un archivo escrito en
+lenguaje de bajo nivel y produce un archivo binario que el procesador puede
+ejecutar. Así pues, su programa escrito en Python será invocado de la siguiente
+manera:
+
+```shell
+python assembler.py -i input.asm -o output.hex
+```
+
+donde `assembler.py` es su programa (o por lo menos el módulo principal),
+`input.asm` es el archivo en lenguaje ensamblador y `output.hex` es un archivo
+de texto que contiene la codificación de las instrucciones en el archivo de
+entrada.
+
+## Expresiones regulares en Python
+
+Las expresiones regulares pueden ser utilizadas para extraer información de un
+texto. El texto puede estar almacenado, por ejemplo, en una cadena de
+caracteres. La expresión regular es también un texto escrito en un lenguaje
+particular. En el caso de Python,
+[este](https://docs.python.org/3/library/re.html) es un muy buen punto de
+partida para iniciar. 
+
+A continuación se darán unos ejemplos que tienen como propósito familiarizarlo
+con el uso de este módulo pero, en ningún momento deben ser entendidos como
+suficientes para realizar el trabajo.
+
+En el siguiente programa, `pattern` contiene la expresión regular a buscar en la
+cadena `str`. En este caso el carácter '^' indica que el texto debe comenzar en
+el inicio de una línea. '.' indica que cualquier símbolo satisface esta parte de
+la expresión. '*' es la cerradura de Kleene, lo que hace que se aplique al
+símbolo que la precede. Finalmente '$' indica el final de la palabra. En
+conclusión, `pattern` acepta todas las palabras que contengan cero o más
+repeticiones de cualquier símbolo. Pruebe el siguiente programa y examine su
+salida. 
+
+```python
+# %%
+import re
+
+str = '''5.1,3.5,1.4,.2,"Setosa"'''
+
+pattern = '^.*$'
+result = re.findall(pattern, str)
+print(result)
+```
+
+Es posible también utilizar expresiones regulares para partir cadenas:
+
+```python
+# %%
+import re
+
+str = '''5.1,3.5,1.4,.2,"Setosa"'''
+
+pattern = ','
+re.split(pattern, str)
+```
+
+Estos son ejemplos muy básicos del uso de expresiones regulares. Sin embargo se
+espera de que usted utilice su potencial completo en este trabajo.
+
 ## Ensamblador para RISCV
 
 El trabajo consiste en la implementación de un ensamblador para el conjunto de
-instrucciones de RISCV32IM. Un ensamblador es un programa que traduce código
-fuente como el siguiente:
+instrucciones de RISCV32IM. Por ejemplo, el siguiente es un programa de entrada:
 
 ```assembly
 main:
@@ -54,7 +119,6 @@ main:
     addi x6, zero, 80
     beq zero, zero, label2
     
-
 label1:
     addi x6, zero, 100
 
@@ -62,7 +126,7 @@ label2:
     add zero, zero, zero
 ```
 
-en un archivo con el siguiente código:
+y su correspondiente salida después de ser procesado:
 
 ```
 03 20 02 13 03 20 02 93 00 52 06 63 05 00 03 13 
@@ -82,15 +146,12 @@ Es de anotar que la salida no es exactamente esa, fue recortada para que no
 ocupara tanto espacio en el documento.
 
 Al programa de arriba lo llamaremos el programa de entrada y al de abajo lo
-llamaremos el programa de salida para los efectos de ésta tarea. Entonces
-básicamente lo que usted debe presentar es un programa que tome como entrada un
-archivo conteniendo código de ensamblador como el de arriba y escriba como
-salida un archivo con código como el de abajo.
+llamaremos el programa de salida para los efectos de éste trabajo. 
 
-Lo único que queda entonces es establecer es cómo cada línea del programa de
-arriba debe quedar representada en el archivo de salida. Para que el desarrollo
-de este ensamblador no luzca en exceso complicado, será descrito por medio de
-ejercicios. Estos irán incorporando cambios sobre su programa de manera
+Lo único que queda entonces es establecer es cómo cada línea (instrucción) del
+programa de arriba debe quedar representada en el archivo de salida. Para que el
+desarrollo de este ensamblador no luzca en exceso complicado, será descrito por
+medio de ejercicios. Estos irán incorporando cambios sobre su programa de manera
 incremental hasta terminar en un ensamblador completo.
 
 ## Ejercicio 1
@@ -100,18 +161,26 @@ archivo de entrada y escriba en un archivo de salida de la siguiente forma:
 
 Cada línea no vacía de la entrada puede ser de una de las siguientes entidades:
 
-- _Etiquetas_:  marcan el inicio de una sección dentro del programa.  
+- _Etiquetas_:  marcan el inicio de una sección dentro del programa.  __label1__
+  y __label2__ son ejemplos de etiquetas.
 - _Instrucciones_: son las que finalmente serán traducidas.
-- _Directivas_:  son opciones que no pertenecen al lenguaje de programación
-   pero que afectan la forma como quedará el archivo de salida.
+- _Directivas_:  son opciones que no pertenecen al lenguaje de programación pero
+   que afectan la forma como quedará el archivo de salida. Las directivas
+   comienzan con el símbolo de '.' y utilizan una línea completa.
 - _Comentarios_: son anotaciones de código que no tienen relevancia durante
-   la ejecución.
+   la ejecución. Comienzan con cualquiera de los símbolos '#' o ';'.
 
-1. Los comentarios deben ser ignorados y no deben ir en el archivo de salida.
-2. Las directivas también serán ignoradas por ahora.
+
+Como la finalidad es hacer uso de las expresiones regulares, usted va a procesar
+el archivo utilizando el módulo _re_ de Python. Para esto debe definir
+expresiones regulares para: comentarios, directivas e instrucciones. Con estas
+usted debe:
+
+1. Ignorar todos los comentarios ya que no aportan información.
+2. Ignorar las directivas por el momento.
 3. Por cada instrucción debe aparecer en el archivo de salida una línea de 32
    bits (binario) con solamente ceros. Exceptuando la parte del código de
-   operación, el cual si debe coincidir con los códigos presentados en
+   operación, el cual si debe coincidir con los códigos presentados en esta [sección](#resumen-de-instrucciones)
 
 ## Ejercicio 2
 
@@ -154,10 +223,8 @@ Note también que las etiquetas no están presentes. De esas se encargará más
 adelante.
 
 Ahora lo que debe hacer es modificar su programa para adicionar la siguiente
-funcionalidad.
-
-Casi todas las instrucciones tienen un registro destino, esto se puede apreciar
-en la siguiente imagen.
+funcionalidad. Casi todas las instrucciones tienen un registro destino, esto se
+puede apreciar en la siguiente figura.
 
 ![](./rtype.svg)
 ![](./itype.svg)
@@ -168,44 +235,22 @@ en la siguiente imagen.
 
 Como se puede apreciar en la figura anterior, a excepción de las instrucciones
 del tipo _S_ y _B_, las demás tienen un campo _rd_. En esta parte usted
-adicionará la codificación de este campo en la salida. Para este momento usted
-ya habrá considerado que cada instrucción en una cadena de texto se puede
-representar de una mejor manera. Por ejemplo, una secuencia con la información
-realmente importante.
+adicionará la codificación de este campo en la salida. Es importante ir
+realizando algunas validaciones usando las expresiones regulares. Por ejemplo,
+el campo _rd_ tiene 5 bits y esos deben ser producidos solamente por nombres
+válidos de registros estos se encuentran en esta [sección](#registros) y
+corresponden a las columnas _Register_ y _ABI Name_.
 
-Por ejemplo, en la instrucción ` addi x4, x10, 520` lo realmente importante es
-la información presente en la secuencia:
-
- $$I=\langle \text{addi}, x4, x10, 520\rangle$$
- 
-
-Asimismo se puede hacer con cualquiera de las otras instrucciones
-sin importar su tipo.
-
-Esta notación luce mucho mejor y usted cuenta con estructuras de datos que le
-van a facilitar el trabajo. Teniendo cada instrucción en una estructura de datos
-y otra estructura de datos que contenga todas las instrucciones luce como una
-buena representación del archivo de entrada. De esta manera lo que usted hará en
-adelante es simplemente procesar esta gran estructura para realizar todas las
-conversiones.
-
-El resultado de este ejercicio es entonces una gran secuencia de instrucciones,
-donde cada instrucción es a su vez, una secuencia como la del ejemplo anterior.
-Adicionalmente usted recorrerá esta gran secuencia para realizar la codificación
-del campo _rd_ en las instrucciones que lo tengan. Esto lo escribirá en el
-archivo de salida.
+El resultado de este ejercicio es entonces la codificación del registro _rd_ de
+cada una de las instrucciones en el archivo de entrada. También puede validar y
+codificar los demás componentes de las instrucciones que hacen referencia a
+nombres de registros. Es decir, cualquier campo en la figura anterior que tenga _rd_, _rs1_ o _rs2_.
 
 ## Ejercicio 3
 
-Como producto del ejercicio anterior usted ya debe contar con todos los datos de
-las instrucciones en una estructura de datos. Esta estructura usted la eligió
-teniendo en cuenta sus conocimientos pero si ve la necesidad la puede cambiar
-más adelante. Lo importante es ir revisando las necesidades que se presentan y
-de ser necesario realizar los cambios o ajustes necesarios.
-
-Adicionalmente ya debe estar familiarizado con el tratamiento del archivo de
-entrada y por ende ya debe estar en capacidad de codificar cualquier instrucción
-de tipo _R_.
+En este ejercicio va a terminar la codificación completa de las instrucciones
+tipo _R_. Tenga en cuenta que estas instrucciones tienen nombres específicos, y
+usted debe utilizar expresiones regulares para validarlos.
 
 ![](./rtype.svg)
 
@@ -213,7 +258,7 @@ Hay instrucciones que tienen constantes o, como también las llamaremos, valores
 inmediatos. Por ejemplo las instrucciones tipo _I_ son de ese grupo.  En el caso
 de estas instrucciones es necesario codificar las constantes. Este proceso es
 simple pero requiere de algunas consideraciones. Las constantes de este grupo
-deben ser representables en 12 bits.
+deben ser representables en 12 bits y pueden estar signadas.
 
 ![](./itype.svg)
 
@@ -221,14 +266,19 @@ Note que la única diferencia entre los dos tipos de instrucciones es la
 constante o valor inmediato. Para codificar esta parte debe tener en cuenta dos
 aspectos:
 
-1. La constante de caer en 12 bits y de no ser el caso su programa debe fallar
-   reportando el error.
+1. La constante ser representable en 12 bits y de no ser el caso su programa
+   debe fallar reportando el error. Use expresiones regulares para esto.
+
 2. La constante puede ser negativa. En este caso la forma de codificarla es
-   utilizando el complemento a 2 en su representación binaria. 
+   utilizando el complemento a 2 en su representación binaria.
 
 Con la culminación de este ejercicio ya lleva un 40 porciento completado. Sin
 embargo, lo más importante es que ya tiene un gran conocimiento sobre su
 programa.
+
+__Por aqui__
+
+----
 
 ## Ejercicio 4
 
@@ -503,11 +553,14 @@ La opción `-O0` es una letra "o" en mayúscula seguida por el número cero.
 
 En el repositorio encontrará los siguientes archivos:
 
-- [__rvalp.pdf__](./rvalp.pdf) : Es un documento donde encontrará información
-  detallada de cómo son escritas las instrucciones en el ensamblador. En
-  particular le recomiendo echar un vistazo al capítulo 5. La sección 5.3 es muy
-  importante porque allí encuentra el formato en el que cada instrucción debe
-  quedar en la salida.
+## rvalp.pdf
+
+[__rvalp.pdf__](./rvalp.pdf) es un documento donde encontrará información
+detallada de cómo son escritas las instrucciones en el ensamblador. En
+particular le recomiendo echar un vistazo al capítulo 5. La sección 5.3 es muy
+importante porque allí encuentra el formato en el que cada instrucción debe
+quedar en la salida.
+
 - [__RISCV_CARD.pdf__](./RISCV_CARD.pdf): Es el documento que contiene todo el
   conjunto de instrucciones. En especial le recomiendo ver la primera página.
 
@@ -529,7 +582,25 @@ utilidad.
   solamente cuestión de escribir la instrucción y saldrá la codificación
   respectiva.
 
-# Resumen de instrucciones
+
+# Resumen de registros e instrucciones
+
+## Registros
+
+| Register | ABI Name | Description           | Saver  |
+| -------- | -------- | --------------------- | ------ |
+| x0       | zero     | Zero constant         | —      |
+| x1       | ra       | Return address        | Callee |
+| x2       | sp       | Stack pointer         | Callee |
+| x3       | gp       | Global pointer        | —      |
+| x4       | tp       | Thread pointer        | —      |
+| x5-x7    | t0-t2    | Temporaries           | Caller |
+| x8       | s0 / fp  | Saved / frame pointer | Callee |
+| x9       | s1       | Saved register        | Callee |
+| x10-x11  | a0-a1    | Fn args/return values | Caller |
+| x12-x17  | a2-a7    | Fn args               | Caller |
+| x18-x27  | s2-s11   | Saved registers       | Callee |
+| x28-x31  | t3-t6    | Temporaries           | Caller |
 
 ## Tipo R
 

@@ -441,25 +441,23 @@ La siguiente imagen muestra la distribución de la información de una instrucci
 <!-- ![](./bimm.svg) -->
 
 Como es posible evidenciar es muy parecida a la distribución de la información
-de las instrucciones tipo _S_ que usted ya realizó en el ejercicio 5. Es decir
+de las instrucciones tipo _S_ que usted ya realizó en el ejercicio 5. Es decir,
 el inmediato o constante está separado en dos partes. La primera está
 comprendida por los bits del 7 al 11 (parte menos significativa) y la segunda en
 los bits del 25 al 31. Sigue siendo una constante de 12 bits pero está
-distribuida de manera diferente en la codificación.
+distribuida de manera diferente en la codificación. Para facilitar la
+codificación suponga la siguiente representación de una constante en 12 bits:
 
----
+![](./bconstant.svg)
 
-| Cod | b31 | b30 | b29 | b28 | b27 | b26 | b25 | b11 | b10 | b9  | b8  | b7  |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Imm | b12 | b10 | b9  | b8  | b7  | b6  | b5  | b4  | b3  | b2  | b1  | b11 |
+Esta constante tiene 12 bits porque el bit en la posición 0 no es utilizado. La
+forma como queda codificada la constante dentro de la instrucción se muestra en
+la siguiente figura:
 
-En la tabla anterior se presenta la correspondencia entre los bits de la
-codificación y los bits de la constante. De acuerdo a esta, el bit en la
-posición 31 de la codificación tendrá el valor del bit 12 del inmediato. El bit
-de la posición 30 de la instrucción tendrá el bit 10 del inmediato y así
-sucesivamente. Note que no existe el bit 0 del inmediato, esto es porque siempre
-se tiene que ser cero y por esto, la codificación de una instrucción de este
-grupo siembre tendrá 0 como el bit menos significativos.
+![](./btypecodingexample.svg)
+
+Note la correspondencia de cada bit de la constante (representado con una letra)
+en la codificación de la constante.
 
 Su trabajo en este ejercicio consiste entonces en terminar la codificación de
 las instrucciones tipo _B_ que comenzó en el ejercicio anterior.
@@ -475,12 +473,14 @@ La instrucción `jalr`, que pertenece al grupo de instrucciones [Tipo J](#tipo-j
 es codificada de la siguiente forma:
 
 ![](./jtype.svg)
-![](./jimm.svg)
+<!-- ![](./jimm.svg) -->
 
 En este caso lo único complicado es que se trata de una constante de 21 bits.
 Las otras dos partes son simplemente dos valores, un _opcode_ de 7 bits y un
 registro de 5. La codificación de la constante dentro de la instrucción se
 realiza de la siguiente manera:
+
+---
 
 | Cod | b31 | b30 | b29 | b28 | b27 | b26 | b25 | b24 | b23 | b22 | b21 | b20 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

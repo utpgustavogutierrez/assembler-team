@@ -1,0 +1,8 @@
+{reg: [
+  {bits: 7,  name: 'opcode', type: 8},
+  {bits: 5,  name: 'd  c  b  a  k', type: 3},
+  {bits: 3,  name: 'funct3', type: 8},
+  {bits: 5,  name: 'rs1', type: 4},
+  {bits: 5,  name: 'rs2', type: 4},
+  {bits: 7,  name: 'l j i h g f e ', type: 3}
+]}

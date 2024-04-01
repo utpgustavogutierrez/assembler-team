@@ -1,0 +1,15 @@
+{reg: [
+  {bits: 1,  name: '0', type: 4},
+  {bits: 1,  name: 'a', type: 8},
+  {bits: 1,  name: 'b', type: 8},
+  {bits: 1,  name: 'c', type: 8},
+  {bits: 1,  name: 'd', type: 8},
+  {bits: 1,  name: 'e', type: 8},
+  {bits: 1,  name: 'f', type: 8},
+  {bits: 1,  name: 'g', type: 8},
+  {bits: 1,  name: 'h', type: 8},
+  {bits: 1,  name: 'i', type: 8},
+  {bits: 1,  name: 'j', type: 8},
+  {bits: 1,  name: 'k', type: 8},
+  {bits: 1,  name: 'l', type: 8},
+], config: {label: {right: 'Imm12'}}}

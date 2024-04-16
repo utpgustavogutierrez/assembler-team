@@ -7,98 +7,219 @@ instruction_pattern = re.compile(r'^\s*[^#;.].*')
 directive_pattern = re.compile(r'^\s*\..*')
 comment_pattern = re.compile(r'^\s*[#;].*')
 
+parentesis_pattern = re.compile(r'\((x.*?)\)')
+
 # Tabla de códigos de operación
 opcode_mapping = {
     'add': {
         'opcode': '0110011',
         'funct3': '000',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'sub': {
         'opcode': '0110011',
         'funct3': '000',
-        'funct7': '0100000'
+        'funct7': '0100000',
+        'tipo': 'r'
     },
     'sll': {
         'opcode': '0110011',
         'funct3': '001',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'slt': {
         'opcode': '0110011',
         'funct3': '010',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'sltu': {
         'opcode': '0110011',
         'funct3': '011',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'xor': {
         'opcode': '0110011',
         'funct3': '100',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'srl': {
         'opcode': '0110011',
         'funct3': '101',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'sra': {
         'opcode': '0110011',
         'funct3': '101',
-        'funct7': '0100000'
+        'funct7': '0100000',
+        'tipo': 'r'
     },
     'or': {
         'opcode': '0110011',
         'funct3': '110',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     'and': {
         'opcode': '0110011',
         'funct3': '111',
-        'funct7': '0000000'
+        'funct7': '0000000',
+        'tipo': 'r'
     },
     
-    'addi': '0010011',
-    'xori': '0010011',
-    'ori': '0010011',
-    'andi': '0010011',
 
 
-    'slli': '0010011',
-    'srli': '0010011',
-    'srai': '0010011',
+    'addi': {
+        'opcode': '0010011',
+        'funct3': '000',
+        'tipo': 'i'   
+    },
+    'xori': {
+        'opcode': '0010011',
+        'funct3': '100',
+        'tipo': 'i'   
+    },
+    'ori': {
+        'opcode': '0010011',
+        'funct3': '110',
+        'tipo': 'i' 
+    },
+    'andi': {
+        'opcode': '0010011',
+        'funct3': '111',
+        'tipo': 'i'   
+    },
 
+    'slli': {
+        'imm7': '"0000000"',
+        'opcode': '0010011',
+        'funct3': '001',
+        'tipo': 'i'   
+    },
+    'srli': {
+        'imm7': '"0000000"',
+        'opcode': '0010011',
+        'funct3': '101',
+        'tipo': 'i'   
+    },
+    'srai': {
+        'imm7': '0100000',
+        'opcode': '0010011',
+        'funct3': '101',
+        'tipo': 'i'  
+    },
 
-    'slti': '0010011',
-    'sltiu': '0010011',
+    'slti': {
+        'opcode': '0010011',
+        'funct3': '010',
+        'tipo': 'i' 
+    },
 
-    'lb': '0000011',
-    'lh': '0000011',
-    'lw': '0000011',
-    'lbu': '0000011',
-    'lhu': '0000011',
+    'sltiu': {
+        'opcode': '0010011',
+        'funct3': '011',
+        'tipo': 'i'  
+    },
+
+    'lb': {
+        'opcode': '0000011',
+        'funct3': '000',
+        'tipo': 'i'   
+    },
+    'lh': {
+        'opcode': '0000011',
+        'funct3': '001',
+        'tipo': 'i'
+    },
+    'lw': {
+        'opcode': '0000011',
+        'funct3': '010',
+        'tipo': 'i'
+    },
+    'lbu': {
+        'opcode': '0000011',
+        'funct3': '100',
+        'tipo': 'i'
+    },
+    'lhu': {
+        'opcode': '0000011',
+        'funct3': '101',
+        'tipo': 'i'
+    },
     
-    'sb': '0100011',
-    'sh': '0100011',
-    'sw': '0100011',
+    'sb': {
+        'opcode': '0100011',
+        'funct3': '000',
+        'tipo': 's'
+    },
+    'sh': {
+        'opcode': '0100011',
+        'funct3': '001',
+        'tipo': 's'
+    },
+    'sw': {
+        'opcode': '0100011',
+        'funct3': '010',
+        'tipo': 's'
+    },
 
-    'beq': '1100011',
-    'bne': '1100011',
-    'blt': '1100011',
-    'bge': '1100011',
-    'bltu': '1100011',
-    'bgeu': '1100011',
+    'beq': {
+        'opcode': '1100011',
+        'funct3': '000',
+        'tipo': 'b'
+    },
+    'bne': {
+        'opcode': '1100011',
+        'funct3': '001',
+        'tipo': 'b'
+    },
+    'blt': {
+        'opcode': '1100011',
+        'funct3': '100',
+        'tipo': 'b'
+    },
+    'bge': {
+        'opcode': '1100011',
+        'funct3': '101',
+        'tipo': 'b'
+    },
+    'bltu': {
+        'opcode': '1100011',
+        'funct3': '110',
+        'tipo': 'b'
+    },
+    'bgeu': {
+        'opcode': '1100011',
+        'funct3': '111',
+        'tipo': 'b'
+    },
 
     'jal': '1101111',
-    'jalr': '1100111',
+    'jalr': {
+        'opcode': '1100111',
+        'funct3': '000' 
+    },
 
     'lui': '0110111',
     'auipc': '0010111',
     
-    'ecall': '1110011',
-    'ebreak': '1110011',
+    'ecall': {
+        'imm12': '000000000000',
+        'rs1': '00000',
+        'opcode': '1110011',
+        'funct3': '000'  
+    },
+    'ebreak': {
+        'imm12': '000000000001',
+        'rs1': '00000',
+        'opcode': '1110011',
+        'funct3': '000' 
+    },
 
     'mul': '0110011',
     'mulh': '0110011',
@@ -191,26 +312,77 @@ register_mapping = {
     'x31': '11111'
 }
 
+def convert_to_twos_complement(num):
+    # Verificar si el número es representable en 12 bits con complemento a 2
+    if -2048 <= num <= 2047:
+        # Si el número es negativo, obtener su representación en complemento a 2
+        if num < 0:
+            # Calcular el complemento a 2
+            complement = (1 << 12) + num  # 1 << 12 representa 2^12
+            # Convertir el complemento a su representación binaria
+            complement_binary = bin(complement & 0xFFF)[2:].zfill(12)
+            return complement_binary
+        else:
+            # Si el número es positivo, simplemente convertirlo a binario de 12 bits
+            binary_rep = bin(num)[2:].zfill(12)
+            return str(binary_rep)
+    else:
+        # Si el número no es representable en 12 bits, lanzar un error
+        raise ValueError("Número no representable en 12 bits")
+
 # Función para convertir una instrucción en una línea de 32 bits
 def instruction_to_binary(instruction):
-    parts = re.split(r'\s|,\s', instruction)
+    parts = re.split(r'\s|,\s*|\(', instruction)
 
-    # Eliminar elementos vacíos (por ejemplo, si hay espacios consecutivos)
-    parts = [part.strip() for part in parts if part.strip()]
-    
-    opcode = opcode_mapping.get(parts[0], '0000000')  # Código de operación, si no se encuentra, asume 0000000
+    result = opcode_mapping.get(parts[0], '0000000')  # Código de operación, si no se encuentra, asume 0000000
 
-    rd = register_to_binary(parts[1])
+    opcode = result['opcode']
+    funct3 = result['funct3']
+    tipo = result['tipo']
 
-    rs1 = register_to_binary(parts[2])
-    
-    rs2 = register_to_binary(parts[3])
-    
-    # Combinar opcode con los bits restantes (en este caso, los bits están en la posición 0-24)
-    binary_line = '0' * 7 + " " + rs2 + " " + rs1 + " 000 " + rd + " " + opcode  # Coloca el opcode al final, después de los ceros
-    
-    # Asegurar que la longitud sea de 32 bits
-    # binary_line = binary_line[-32:]
+    if parts[-1][-1] == ')':
+        parts[-1] = parts[-1][:-1]
+
+        imm = convert_to_twos_complement(int(parts[2]))
+        rs1 = register_to_binary(parts[3])
+
+        if tipo == "i":
+            rd = register_to_binary(parts[1])
+            binary_line = imm + " " + rs1 + " " + funct3 + " " + rd + " " + opcode 
+            
+        elif tipo == "s":
+            parte1 = imm[:7]  # Los primeros 7 bits
+            parte2 = imm[7:]  # Los últimos 5 bits
+            rs2 = register_to_binary(parts[1])
+            binary_line = parte1 + " " + rs2 + " " + rs1 + " " + funct3 + " " + parte2 + " " + opcode  
+    else:
+        if tipo == "i":
+            if parts[0] == "slli" or parts[0] == "slri":
+                imm7 = "0000000"
+                if int(parts[3]) < 0 or int(parts[3]) > 31:
+                    raise ValueError("Constant invalid")
+                else:
+                    imm = bin(int(parts[3]))[2:].zfill(5)
+            elif parts[0] == "srai":
+                imm7 = "0100000"
+                if int(parts[3]) < 0 or int(parts[3]) > 31:
+                    raise ValueError("Constant invalid")
+                else:
+                    imm = bin(int(parts[3]))[2:].zfill(5)
+            else:
+                imm7 = ""
+                imm = convert_to_twos_complement(int(parts[3]))
+
+            rd = register_to_binary(parts[1])
+            rs1 = register_to_binary(parts[2])
+            binary_line = imm7 + " " + imm + " " + rs1 + " " + funct3 + " " + rd + " " + opcode 
+
+        elif tipo == "r":
+            funct7 = result['funct7']
+            rd = register_to_binary(parts[1])
+            rs2 = register_to_binary(parts[3])
+            rs1 = register_to_binary(parts[2])
+            binary_line = funct7 + " " + rs2 + " " + rs1 + " " + funct3 + " " + rd + " " + opcode 
     
     return binary_line
 
